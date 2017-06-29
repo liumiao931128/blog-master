@@ -1,0 +1,119 @@
+{include file="Admin@default/Public/header" /}
+<title>添加后台用户</title>
+<meta name="keywords" content="H-ui.admin v3.0,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
+<meta name="description" content="H-ui.admin v3.0，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+</head>
+<body>
+<article class="page-container">
+	<form action="#" method="post" class="form form-horizontal" id="addFormUser">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="请输入用户名" id="username" name="username" class="required">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>账号：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" placeholder="@" name="email" id="email">
+				<span id="gradeinfo" style="display:none">dksfhdkahkah</span>
+			</div>
+		</div>
+        <div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="password" class="input-text" value="" placeholder="请输入密码" id="password" name="password" class="required">
+			</div>
+		</div>
+        <div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="radio-box">
+					<input name="status" type="radio" id="status-1" checked value="1">
+					<label for="status-1">正常</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="status-2" name="status" value="2">
+					<label for="status-2">冻结</label>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<input class="btn btn-primary radius" type="submit"  value="&nbsp;&nbsp;提交&nbsp;&nbsp;" id="send">
+			</div>
+		</div>
+	</form>
+</article>
+{block name="include"}{include file="Admin@default/Public/fooder" /}{/block}
+<script type="text/javascript" src="__public__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="__public__/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__public__/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__public__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#email").blur(function(){
+	  var email  = $("#email").val();
+	  $.ajax({
+		  url: '/admin/Increase/queryUserName?email='+email,
+		  type: 'GET',
+		  success:function(json){
+				  json = eval('('+json+')');
+				  if (json.code == 1) {
+					  alert("账号存在");
+					  $("#send").attr('disabled','disabled');
+			  }else {
+			  	  $("#send").removeAttr("disabled");
+			  }
+		  }
+	  });
+  });
+  return false;
+});
+$(function(){
+		$("#addFormUser").validate({
+		rules:{
+			username:{
+				required:true,
+				minlength:2,
+				maxlength:16
+			},
+			password:{
+				required:true,
+				minlength:6,
+				maxlength:16
+			},
+			email:{
+				required:true,
+				email:true,
+			},
+
+		},
+		onkeyup:false,
+		focusCleanup:true,
+		success:"valid",
+		submitHandler:function(form){
+			var username  = $("#username").val();
+			var email     = $("#email").val();
+			var pass      = $("#password").val();
+			var status    = $("input[name='status']:checked").val();
+			$.ajax({
+				url: '/admin/Increase/user_add',
+				type: 'POST',
+				data: {username: username,email:email,password:pass,status:status},
+				success:function(json){
+						json = eval('('+json+')');
+						if (json.code == 1) {
+							alert("注册成功");
+							var index = parent.layer.getFrameIndex(window.name);
+							parent.layer.close(index);
+							return;
+					}else {
+						alert("系统错误，请联系管理员");
+					}
+				}
+			});
+		},
+	});
+});
+ </script>

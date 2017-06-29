@@ -1,0 +1,99 @@
+{include file="Admin@default/Public/header" /}
+<body>
+<article class="page-container">
+	<form action="#" method="post" class="form form-horizontal" id="form-admin-funcs-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>模块名：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="func_desc" name="func_desc" style="width:210px;">
+			</div>
+		</div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>控制器名：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="" placeholder="" id="controller" name="controller" style="width:210px;">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>方法名：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="" placeholder="" id="action" name="action" style="width:210px;">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>模块名：</label>
+            &nbsp;&nbsp;&nbsp;
+            <span class="select-box inline">
+
+               <select name="pid" id="pid" class="select" style="width:200px;">
+				   <option value="0">无</option>
+				   	{volist name='$data' id='vo'}
+                   	<option value="{$vo.id}" >{$vo.func_desc}</option>
+				    {/volist}
+               </select>
+
+           </span>
+        </div>
+
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<button type="submit" class="btn btn-success radius" id="admin-funcs-save" name="admin-role-save"><i class="icon-ok"></i>提交</button>
+			</div>
+		</div>
+	</form>
+</article>
+{include file="Admin@default/Public/fooder" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+/**
+ * 添加模块功能
+ */
+	$("#admin-funcs-save").click(function () {
+	    var form = $("#form-admin-funcs-add");
+	    if (!checkAddform()) {
+	        return false;
+	    } else {
+			var func_desc  = $("#func_desc").val();
+			var controller  = $("#controller").val();
+			var action  = $("#action").val();
+			var pid = $("#pid option:selected").val();
+			var pname = $("#pid option:selected").text();
+			$.ajaxSettings.async = false; //修改ajax 请求为同步
+			$.ajax({
+				url: '/admin/Funcs/post_add_funcs',
+				type: 'POST',
+				data: {func_desc: func_desc,controller:controller,action:action,pid:pid,pname:pname},
+				success:function(json){
+						json = eval('('+json+')');
+						if (json.code == 1) {
+							alert("添加成功");
+							window.parent.location.reload();
+							layer_close();
+					}else {
+						alert("系统错误，请联系管理员");
+					}
+				}
+			});
+	    }
+
+	});
+	function checkAddform() {
+	    var form = $("#form-admin-funcs-add")[0];
+	    if (!form.func_desc.value) {
+	        alert("请输入模块名");
+	        return false;
+	    }
+	    if (!form.controller.value) {
+	        alert("请输入控制器名");
+	        return false;
+	    }
+	    if (!form.action.value) {
+	        alert("请输入方法名");
+	        return false;
+	    }
+	    return true;
+	}
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
